@@ -131,7 +131,7 @@ if choice == "FS":
 
     if chosen_FS_Method=="CHI Test (SelectKBest)":
         st.subheader("Best feature with score")
-        bestfeatures = SelectKBest(score_func=chi2, k=10)
+        bestfeatures = SelectKBest(score_func=chi2, k=len(df_numeric.columns))
         fit = bestfeatures.fit(X,y)            
         dfscores = pd.DataFrame(fit.scores_)
         dfcolumns = pd.DataFrame(X.columns)
@@ -146,7 +146,6 @@ if choice == "FS":
         st.subheader("Best feature with Importance")
         bestfeatures = ExtraTreesClassifier()
         fit = bestfeatures.fit(X,y)
-
         dfscores = pd.DataFrame(fit.feature_importances_)
         dfcolumns = pd.DataFrame(X.columns)
         featureScores = pd.concat([dfcolumns,dfscores],axis=1)
