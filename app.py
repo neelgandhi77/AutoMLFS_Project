@@ -11,6 +11,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import *
 import plotly.express as px
 import sklearn.metrics as metrics
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
 
 if os.path.exists('./dataset.csv'): 
     df = pd.read_csv('dataset.csv', index_col=None)
@@ -18,7 +20,7 @@ if os.path.exists('./dataset.csv'):
 with st.sidebar: 
     st.image("https://th.bing.com/th/id/OIP.Npd77_nhXMQePxy_VsOGnQHaEK?rs=1&pid=ImgDetMain")
     st.title("Regression")
-    choice = st.radio("Navigation", ["Upload", "Visualization Filtered", "Visualization Static", "Modelling","Additional"])
+    choice = st.radio("Navigation", ["Upload", "Visualization Filtered", "Visualization Static", "Modelling","FS","Additional"])
     st.info("Let's build and explore your data.")
 
 if choice == "Upload":
@@ -63,51 +65,98 @@ if choice == "Visualization Static":
     sns.heatmap(df.corr(), ax=ax)
     st.write(fig)
 
+def model_train_test_results(X,y,model):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
+    model.fit(X_train, y_train)
+
+    y_pred = model.predict(X_test)
+    #st.info("Accuracy Achieved")
+    score = round(model.score(X_test,y_test),2)*100
+    mae = metrics.mean_absolute_error(y_test, y_pred)
+    mse = metrics.mean_squared_error(y_test, y_pred)
+    rmse = np.sqrt(mse) # or mse**(0.5)  
+    r2 = metrics.r2_score(y_test,y_pred)
+
+    st.header("Results", divider='rainbow')
+    st.subheader("Score: " + str(score) + "%")
+    st.write("MAE:",mae)            
+    st.write("MSE:", mse)
+    st.write("RMSE:", rmse)
+    st.write("R-Squared:", r2)
+    fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline='ols',trendline_color_override = 'red') 
+    st.plotly_chart(fig, use_container_width=True)
 
 if choice == "Modelling": 
+    st.title("Modeling")
     df_numeric = df.select_dtypes(include=np.number)
     
     chosen_target = st.selectbox('Choose the Target Column', df_numeric.columns[1:])
-    model = st.selectbox('Choose Model',['Model Selection', LinearRegression(),Lasso()])
+    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
+    X = df_numeric.drop([chosen_target],axis=1)
+    y = df[chosen_target]
+    
+    if model=="LinearRegression":
+        model=LinearRegression()
+    if model=="Lasso":
+        model=Lasso()
     if model == 'Model Selection':
         st.write("Please Select any One Model")
     else:
         button = st.button('Run Modelling')
-        if button: 
-            X = df_numeric.drop([chosen_target],axis=1)
-            #st.write(X)
-            y = df[chosen_target]
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
-            model.fit(X_train, y_train)
+        if button==True: 
+            model_train_test_results(X,y,model)
+           
 
-            y_pred = model.predict(X_test)
 
-            #st.info("Accuracy Achieved")
-            score = round(model.score(X_test,y_test),2)*100
-
-            mae = metrics.mean_absolute_error(y_test, y_pred)
-            mse = metrics.mean_squared_error(y_test, y_pred)
-            rmse = np.sqrt(mse) # or mse**(0.5)  
-            r2 = metrics.r2_score(y_test,y_pred)
-
-            st.write("Results")
-            st.write("Score: " + str(score) + "%")
-            st.write("MAE:",mae)
-            st.write("MSE:", mse)
-            st.write("RMSE:", rmse)
-            st.write("R-Squared:", r2)
-            fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline='ols',trendline_color_override = 'red') 
-            st.plotly_chart(fig, use_container_width=True)
-
-        #explainer = shap.Explainer(lr.predict)
-        #shap_values = explainer(X_test)
-        #fig = shap.plots.waterfall(shap_values[0])
+if choice == "FS":
+    st.header("Feature Selection",divider="rainbow")
+    df_numeric = df.select_dtypes(include=np.number)
+    chosen_target = st.selectbox('Choose the Target Column', df_numeric.columns[1:])
+    X = df_numeric.drop([chosen_target],axis=1)
+    y = df[chosen_target].astype('int')
+    
+    st.subheader("Best feature with score")
+    bestfeatures = SelectKBest(score_func=chi2, k=10)
         
-        #explainer = shap.KernelExplainer(lr.predict, X_test)
-        #shap_values = explainer.shap_values(X_test)
-        #fig = shap.summary_plot(shap_values, X_train, plot_type="bar")
-        #st.write(fig)
+        
+    fit = bestfeatures.fit(X,y)            
+    dfscores = pd.DataFrame(fit.scores_)
+    dfcolumns = pd.DataFrame(X.columns)
+    featureScores = pd.concat([dfcolumns,dfscores],axis=1)
+    featureScores.columns = ['feature','Score'] 
+    featureScores = featureScores.sort_values(by=['Score'])
+    st.write(featureScores)
+    
+    #fig, ax = plt.subplots(figsize=(25,20))
+    fig = px.bar(featureScores,x='feature', y='Score')
+    st.write(fig)
+
+    # X = X[]
+    #st.write(featureScores['feature'].tail(5))
+    selected_features = st.multiselect("Please Select features",options=featureScores['feature'].tail(10),default=featureScores['feature'].tail(10))
+    st.write(selected_features)
+
+    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
+   
+    if model=="LinearRegression":
+        model=LinearRegression()
+    if model=="Lasso":
+        model=Lasso()
+    if model == 'Model Selection':
+        st.write("Please Select any One Model")
+    else:
+      
+        X = X[selected_features]
+        st.write(X)
+        if st.button("FS"):
+            model_train_test_results(X,y,model)
+        
+        
 
 if choice == "Additional":
-    pass
+    corrmat = df.corr()
+    top_corr_features = corrmat.index
+    fig, ax = plt.subplots(figsize=(26,20))
+    sns.heatmap(df[top_corr_features].corr(),annot=True,cmap="RdYlGn",ax=ax)
+    st.write(fig)
     

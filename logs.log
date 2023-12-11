@@ -14650,3 +14650,229 @@ The default value of numeric_only in DataFrame.corr is deprecated. In a future v
 Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 1.037e+04, tolerance: 9.325e+00
 
 
+2023-12-11 09:21:36,646:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:21:36,646:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:21:36,646:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:21:36,646:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:21:38,989:WARNING:The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+2023-12-11 09:22:27,646:WARNING:The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+2023-12-11 09:24:09,076:WARNING:The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+2023-12-11 09:24:46,622:WARNING:The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+2023-12-11 09:25:53,966:WARNING:The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+2023-12-11 09:26:21,838:WARNING:The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+2023-12-11 09:26:45,848:WARNING:The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+2023-12-11 09:27:04,418:WARNING:The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+2023-12-11 09:27:24,748:WARNING:The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+2023-12-11 09:27:39,181:WARNING:The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+2023-12-11 09:28:25,796:WARNING:The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+2023-12-11 09:36:28,377:WARNING:C:\Users\SESA749667\AppData\Local\Programs\Python\Python311\Lib\site-packages\sklearn\linear_model\_coordinate_descent.py:631: ConvergenceWarning:
+
+Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 1.074e+04, tolerance: 9.736e+00
+
+
+2023-12-11 09:36:39,042:WARNING:C:\Users\SESA749667\AppData\Local\Programs\Python\Python311\Lib\site-packages\sklearn\linear_model\_coordinate_descent.py:631: ConvergenceWarning:
+
+Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 9.360e+03, tolerance: 9.516e+00
+
+
+2023-12-11 09:46:52,800:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:46:52,800:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:46:52,800:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:46:52,800:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:50:13,328:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:50:13,328:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:50:13,338:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:50:13,338:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2023-12-11 09:51:38,942:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:65: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 09:53:14,596:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:65: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 09:53:21,190:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:132: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 10:58:42,106:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:65: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 10:59:09,321:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:65: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 10:59:13,269:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 10:59:34,105:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 10:59:49,845:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:00:01,972:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:00:30,712:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:00:58,040:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:01:19,527:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:01:37,967:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:02:00,880:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:02:21,337:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:02:39,858:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:03:01,811:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:03:48,968:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:04:08,384:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:04:21,624:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:04:49,237:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:05:14,365:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:05:31,244:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:05:46,501:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:06:03,829:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:128: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:08:51,271:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:65: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:24:38,934:WARNING:C:\Users\SESA749667\AppData\Local\Programs\Python\Python311\Lib\site-packages\sklearn\linear_model\_coordinate_descent.py:631: ConvergenceWarning:
+
+Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 1.049e+04, tolerance: 9.399e+00
+
+
+2023-12-11 11:24:41,842:WARNING:C:\Users\SESA749667\AppData\Local\Programs\Python\Python311\Lib\site-packages\sklearn\linear_model\_coordinate_descent.py:631: ConvergenceWarning:
+
+Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 1.073e+04, tolerance: 9.824e+00
+
+
+2023-12-11 11:27:03,320:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:65: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:40:04,792:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:146: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:51:43,139:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:147: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:53:11,307:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:147: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 11:56:17,767:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:148: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
+2023-12-11 12:14:33,900:WARNING:C:\Users\SESA749667\Desktop\Project\app.py:157: FutureWarning:
+
+The default value of numeric_only in DataFrame.corr is deprecated. In a future version, it will default to False. Select only valid columns or specify the value of numeric_only to silence this warning.
+
+
