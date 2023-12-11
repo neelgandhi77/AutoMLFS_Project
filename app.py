@@ -1,7 +1,7 @@
 import streamlit as st
 import seaborn as sn
 from pycaret.regression import *
-import shap
+from sklearn.ensemble import *
 import os 
 import numpy as np
 import pandas as pd
@@ -14,14 +14,43 @@ import sklearn.metrics as metrics
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 
+st.set_page_config(
+        page_title="Regression FS",
+)
+
+def model_train_test_results(X,y,model):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
+    model.fit(X_train, y_train)
+
+    y_pred = model.predict(X_test)
+    #st.info("Accuracy Achieved")
+    score = round(model.score(X_test,y_test),2)*100
+    mae = metrics.mean_absolute_error(y_test, y_pred)
+    mse = metrics.mean_squared_error(y_test, y_pred)
+    rmse = np.sqrt(mse) # or mse**(0.5)  
+    r2 = metrics.r2_score(y_test,y_pred)
+
+    st.header("Results", divider='rainbow')
+    st.subheader("Score: " + str(score) + "%")
+    st.write("MAE:",mae)            
+    st.write("MSE:", mse)
+    st.write("RMSE:", rmse)
+    st.write("R-Squared:", r2)
+    fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline='ols',trendline_color_override = 'red') 
+    st.plotly_chart(fig, use_container_width=True)
+
+
+
 if os.path.exists('./dataset.csv'): 
     df = pd.read_csv('dataset.csv', index_col=None)
+
 
 with st.sidebar: 
     st.image("https://th.bing.com/th/id/OIP.Npd77_nhXMQePxy_VsOGnQHaEK?rs=1&pid=ImgDetMain")
     st.title("Regression")
     choice = st.radio("Navigation", ["Upload", "Visualization Filtered", "Visualization Static", "Modelling","FS","Additional"])
     st.info("Let's build and explore your data.")
+
 
 if choice == "Upload":
     st.title("Upload Your Dataset")
@@ -36,7 +65,7 @@ if choice == "Upload":
 
 
 if choice == "Visualization Filtered": 
-    st.title("Data Visuals")
+    st.header("Data Visuals",divider="rainbow")
     df_numeric = df.select_dtypes(include=np.number)
     chosen_option = st.selectbox('Choose the Criteria', ['Select','Countrywise (Year on Year)','Yearwise (Country on Country)'])
 
@@ -65,29 +94,9 @@ if choice == "Visualization Static":
     sns.heatmap(df.corr(), ax=ax)
     st.write(fig)
 
-def model_train_test_results(X,y,model):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
-    model.fit(X_train, y_train)
-
-    y_pred = model.predict(X_test)
-    #st.info("Accuracy Achieved")
-    score = round(model.score(X_test,y_test),2)*100
-    mae = metrics.mean_absolute_error(y_test, y_pred)
-    mse = metrics.mean_squared_error(y_test, y_pred)
-    rmse = np.sqrt(mse) # or mse**(0.5)  
-    r2 = metrics.r2_score(y_test,y_pred)
-
-    st.header("Results", divider='rainbow')
-    st.subheader("Score: " + str(score) + "%")
-    st.write("MAE:",mae)            
-    st.write("MSE:", mse)
-    st.write("RMSE:", rmse)
-    st.write("R-Squared:", r2)
-    fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline='ols',trendline_color_override = 'red') 
-    st.plotly_chart(fig, use_container_width=True)
 
 if choice == "Modelling": 
-    st.title("Modeling")
+    st.header("Modelling",divider="rainbow")
     df_numeric = df.select_dtypes(include=np.number)
     
     chosen_target = st.selectbox('Choose the Target Column', df_numeric.columns[1:])
@@ -100,7 +109,7 @@ if choice == "Modelling":
     if model=="Lasso":
         model=Lasso()
     if model == 'Model Selection':
-        st.write("Please Select any One Model")
+        st.warning("Please Select any One Model")
     else:
         button = st.button('Run Modelling')
         if button==True: 
@@ -115,25 +124,40 @@ if choice == "FS":
     X = df_numeric.drop([chosen_target],axis=1)
     y = df[chosen_target].astype('int')
     
-    st.subheader("Best feature with score")
-    bestfeatures = SelectKBest(score_func=chi2, k=10)
-        
-        
-    fit = bestfeatures.fit(X,y)            
-    dfscores = pd.DataFrame(fit.scores_)
-    dfcolumns = pd.DataFrame(X.columns)
-    featureScores = pd.concat([dfcolumns,dfscores],axis=1)
-    featureScores.columns = ['feature','Score'] 
-    featureScores = featureScores.sort_values(by=['Score'])
-    st.write(featureScores)
-    
-    #fig, ax = plt.subplots(figsize=(25,20))
-    fig = px.bar(featureScores,x='feature', y='Score')
-    st.write(fig)
 
-    # X = X[]
-    #st.write(featureScores['feature'].tail(5))
-    selected_features = st.multiselect("Please Select features",options=featureScores['feature'].tail(10),default=featureScores['feature'].tail(10))
+    chosen_FS_Method = st.selectbox("Choose FS Method",['Select Method','CHI Test (SelectKBest)','Extra Tree Classifier'])
+    if chosen_FS_Method=='Select Method':
+        st.warning("Please Select any One Method")
+
+    if chosen_FS_Method=="CHI Test (SelectKBest)":
+        st.subheader("Best feature with score")
+        bestfeatures = SelectKBest(score_func=chi2, k=10)
+        fit = bestfeatures.fit(X,y)            
+        dfscores = pd.DataFrame(fit.scores_)
+        dfcolumns = pd.DataFrame(X.columns)
+        featureScores = pd.concat([dfcolumns,dfscores],axis=1)
+        featureScores.columns = ['features','Score'] 
+        featureScores = featureScores.sort_values(by=['Score'],ascending=False)
+        st.write(featureScores)
+        fig = px.bar(featureScores,x='features', y='Score')
+        st.write(fig)
+
+    if chosen_FS_Method=="Extra Tree Classifier":
+        st.subheader("Best feature with Importance")
+        bestfeatures = ExtraTreesClassifier()
+        fit = bestfeatures.fit(X,y)
+
+        dfscores = pd.DataFrame(fit.feature_importances_)
+        dfcolumns = pd.DataFrame(X.columns)
+        featureScores = pd.concat([dfcolumns,dfscores],axis=1)
+        featureScores.columns = ['features','Importance'] 
+        featureScores = featureScores.sort_values(by=['Importance'],ascending=False)
+        st.write(featureScores)
+        fig = px.bar(featureScores,x='features', y='Importance')
+        st.write(fig)
+      
+
+    selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns),default= pd.Series(X.columns))
     st.write(selected_features)
 
     model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
@@ -143,17 +167,18 @@ if choice == "FS":
     if model=="Lasso":
         model=Lasso()
     if model == 'Model Selection':
-        st.write("Please Select any One Model")
+        st.warning("Please Select any One Model")
     else:
       
         X = X[selected_features]
-        st.write(X)
-        if st.button("FS"):
+        #st.write(X)
+        if st.button("Modeling"):
             model_train_test_results(X,y,model)
         
         
 
 if choice == "Additional":
+    st.header("Data Visuals - Add.",divider="rainbow")
     corrmat = df.corr()
     top_corr_features = corrmat.index
     fig, ax = plt.subplots(figsize=(26,20))
