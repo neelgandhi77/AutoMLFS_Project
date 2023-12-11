@@ -14,6 +14,10 @@ import sklearn.metrics as metrics
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 
+
+
+st.set_option('browser.gatherUsageStats', False)
+
 st.set_page_config(
         page_title="Regression FS",
 )
