@@ -131,7 +131,7 @@ if choice == "FS":
 
     if chosen_FS_Method=="CHI Test (SelectKBest)":
         st.subheader("Best feature with score")
-        bestfeatures = SelectKBest(score_func=chi2, k=len(df_numeric.columns))
+        bestfeatures = SelectKBest(score_func=chi2, k=len(df_numeric.columns)-1)
         fit = bestfeatures.fit(X,y)            
         dfscores = pd.DataFrame(fit.scores_)
         dfcolumns = pd.DataFrame(X.columns)
