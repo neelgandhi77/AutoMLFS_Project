@@ -14,6 +14,7 @@ import sklearn.metrics as metrics
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 
+plt.rcParams['font.sans-serif'] = 'Arial'
 
 st.set_page_config(
         page_title="Regression FS",
