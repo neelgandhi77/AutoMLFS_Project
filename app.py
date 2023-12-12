@@ -99,7 +99,7 @@ if choice == "Visualization Filtered":
     chosen_option = st.selectbox('Choose the Criteria', ['Select','Countrywise (Year on Year)','Yearwise (Country on Country)'])
 
     if chosen_option == 'Select':
-        st.write("Please Select Criteria")
+        st.warning("Please Select Criteria")
     if chosen_option == 'Countrywise (Year on Year)':
         chosen_country = st.selectbox('Choose the Coutry', df['Country'].unique())
         chosen_feature = st.selectbox('Choose Feature', df_numeric.columns[1:])
