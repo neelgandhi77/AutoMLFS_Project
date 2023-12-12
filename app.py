@@ -175,8 +175,11 @@ if choice == "FS":
         featureScores.columns = ['features','Importance'] 
         featureScores = featureScores.sort_values(by=['Importance'],ascending=False)
         st.write(featureScores)
-        fig = px.bar(featureScores,x='features', y='Importance')
-        st.write(fig)
+        try:
+            fig = px.bar(featureScores,x='features', y='Importance')
+            st.write(fig)
+        except:
+            st.warning("Unable to display, Streamlit came accross Error --typically a Resource Error/ Font Type Error")
       
     selected_features_train(X,y)
     
