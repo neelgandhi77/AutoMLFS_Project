@@ -14,6 +14,7 @@ import sklearn.metrics as metrics
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 
+
 st.set_page_config(
         page_title="Regression FS",
 )
@@ -40,6 +41,7 @@ def model_train_test_results(X,y,model):
     st.plotly_chart(fig, use_container_width=True)
 
 
+global df, df_numeric
 
 if os.path.exists('./dataset.csv'): 
     df = pd.read_csv('dataset.csv', index_col=None)
@@ -58,6 +60,8 @@ if choice == "Upload":
     if file: 
         df = pd.read_csv(file, index_col=None)
         df = df.dropna()
+        df_numeric = df.select_dtypes(include=np.number)
+        df_numeric[df_numeric <  0] = 0
         df.to_csv('dataset.csv', index=None)
         st.dataframe(df)
         st.write(df.shape)
@@ -67,6 +71,7 @@ if choice == "Upload":
 if choice == "Visualization Filtered": 
     st.header("Data Visuals",divider="rainbow")
     df_numeric = df.select_dtypes(include=np.number)
+    df_numeric[df_numeric <  0] = 0
     chosen_option = st.selectbox('Choose the Criteria', ['Select','Countrywise (Year on Year)','Yearwise (Country on Country)'])
 
     if chosen_option == 'Select':
@@ -115,11 +120,29 @@ if choice == "Modelling":
         if button==True: 
             model_train_test_results(X,y,model)
            
+def selected_features_train(X,y):
+    selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns),default= pd.Series(X.columns))
+    st.write(selected_features)
+    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
 
+    if model=="LinearRegression":
+        model=LinearRegression()
+    if model=="Lasso":
+        model=Lasso()
+    if model == 'Model Selection':
+        st.warning("Please Select any One Model")
+    else:
+        
+        X = X[selected_features]    
+        #st.write(X)
+        if st.button("Modeling"):
+            model_train_test_results(X,y,model)
+            
 
 if choice == "FS":
     st.header("Feature Selection",divider="rainbow")
     df_numeric = df.select_dtypes(include=np.number)
+    df_numeric[df_numeric <  0] = 0
     chosen_target = st.selectbox('Choose the Target Column', df_numeric.columns[1:])
     X = df_numeric.drop([chosen_target],axis=1)
     y = df[chosen_target].astype('int')
@@ -131,7 +154,7 @@ if choice == "FS":
 
     if chosen_FS_Method=="CHI Test (SelectKBest)":
         st.subheader("Best feature with score")
-        bestfeatures = SelectKBest(score_func=chi2, k=10)
+        bestfeatures = SelectKBest(score_func=chi2, k=len(df_numeric.columns)-1)
         fit = bestfeatures.fit(X,y)            
         dfscores = pd.DataFrame(fit.scores_)
         dfcolumns = pd.DataFrame(X.columns)
@@ -146,7 +169,6 @@ if choice == "FS":
         st.subheader("Best feature with Importance")
         bestfeatures = ExtraTreesClassifier()
         fit = bestfeatures.fit(X,y)
-
         dfscores = pd.DataFrame(fit.feature_importances_)
         dfcolumns = pd.DataFrame(X.columns)
         featureScores = pd.concat([dfcolumns,dfscores],axis=1)
@@ -156,25 +178,8 @@ if choice == "FS":
         fig = px.bar(featureScores,x='features', y='Importance')
         st.write(fig)
       
-
-    selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns),default= pd.Series(X.columns))
-    st.write(selected_features)
-
-    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
-   
-    if model=="LinearRegression":
-        model=LinearRegression()
-    if model=="Lasso":
-        model=Lasso()
-    if model == 'Model Selection':
-        st.warning("Please Select any One Model")
-    else:
-      
-        X = X[selected_features]
-        #st.write(X)
-        if st.button("Modeling"):
-            model_train_test_results(X,y,model)
-        
+    selected_features_train(X,y)
+    
         
 
 if choice == "Additional":
