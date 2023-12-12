@@ -41,8 +41,24 @@ def model_train_test_results(X,y,model):
     st.plotly_chart(fig, use_container_width=True)
 
 
-global df, df_numeric
+def selected_features_train(X,y):
+    selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns),default= pd.Series(X.columns))
+    st.write(selected_features)
+    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
 
+    if model=="LinearRegression":
+        model=LinearRegression()
+    if model=="Lasso":
+        model=Lasso()
+    if model == 'Model Selection':
+        st.warning("Please Select any One Model")
+    else:
+        
+        X = X[selected_features]    
+        #st.write(X)
+        if st.button("Modeling"):
+            model_train_test_results(X[selected_features],y,model)
+            
 if os.path.exists('./dataset.csv'): 
     df = pd.read_csv('dataset.csv', index_col=None)
 
@@ -120,24 +136,7 @@ if choice == "Modelling":
         if button==True: 
             model_train_test_results(X,y,model)
            
-def selected_features_train(X,y):
-    selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns),default= pd.Series(X.columns))
-    st.write(selected_features)
-    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
 
-    if model=="LinearRegression":
-        model=LinearRegression()
-    if model=="Lasso":
-        model=Lasso()
-    if model == 'Model Selection':
-        st.warning("Please Select any One Model")
-    else:
-        
-        X = X[selected_features]    
-        #st.write(X)
-        if st.button("Modeling"):
-            model_train_test_results(X,y,model)
-            
 
 if choice == "FS":
     st.header("Feature Selection",divider="rainbow")
