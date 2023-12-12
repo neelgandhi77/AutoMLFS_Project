@@ -16,10 +16,16 @@ from sklearn.feature_selection import chi2
 import matplotlib.font_manager
 
 
+plt.rcParams.update({
+    'font.family':'sans-serif',
+    'font.sans-serif':['Liberation Sans'],
+    })
+
 
 st.set_page_config(
         page_title="Regression FS",
 )
+
 
 def model_train_test_results(X,y,model):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
