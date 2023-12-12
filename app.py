@@ -13,11 +13,19 @@ import plotly.express as px
 import sklearn.metrics as metrics
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
+import matplotlib.font_manager
+
+
+plt.rcParams.update({
+    'font.family':'sans-serif',
+    'font.sans-serif':['Liberation Sans'],
+    })
 
 
 st.set_page_config(
         page_title="Regression FS",
 )
+
 
 def model_train_test_results(X,y,model):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
@@ -41,8 +49,24 @@ def model_train_test_results(X,y,model):
     st.plotly_chart(fig, use_container_width=True)
 
 
-global df, df_numeric
+def selected_features_train(X,y):
+    selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns),default= pd.Series(X.columns))
+    st.write(selected_features)
+    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
 
+    if model=="LinearRegression":
+        model=LinearRegression()
+    if model=="Lasso":
+        model=Lasso()
+    if model == 'Model Selection':
+        st.warning("Please Select any One Model")
+    else:
+        
+        X = X[selected_features]    
+        #st.write(X)
+        if st.button("Modeling"):
+            model_train_test_results(X[selected_features],y,model)
+            
 if os.path.exists('./dataset.csv'): 
     df = pd.read_csv('dataset.csv', index_col=None)
 
@@ -120,24 +144,7 @@ if choice == "Modelling":
         if button==True: 
             model_train_test_results(X,y,model)
            
-def selected_features_train(X,y):
-    selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns),default= pd.Series(X.columns))
-    st.write(selected_features)
-    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
 
-    if model=="LinearRegression":
-        model=LinearRegression()
-    if model=="Lasso":
-        model=Lasso()
-    if model == 'Model Selection':
-        st.warning("Please Select any One Model")
-    else:
-        
-        X = X[selected_features]    
-        #st.write(X)
-        if st.button("Modeling"):
-            model_train_test_results(X,y,model)
-            
 
 if choice == "FS":
     st.header("Feature Selection",divider="rainbow")
@@ -166,17 +173,21 @@ if choice == "FS":
         st.write(fig)
 
     if chosen_FS_Method=="Extra Tree Classifier":
-        st.subheader("Best feature with Importance")
-        bestfeatures = ExtraTreesClassifier()
-        fit = bestfeatures.fit(X,y)
-        dfscores = pd.DataFrame(fit.feature_importances_)
-        dfcolumns = pd.DataFrame(X.columns)
-        featureScores = pd.concat([dfcolumns,dfscores],axis=1)
-        featureScores.columns = ['features','Importance'] 
-        featureScores = featureScores.sort_values(by=['Importance'],ascending=False)
-        st.write(featureScores)
-        fig = px.bar(featureScores,x='features', y='Importance')
-        st.write(fig)
+        try:
+            st.subheader("Best feature with Importance")
+            bestfeatures = ExtraTreesClassifier()
+            fit = bestfeatures.fit(X,y)
+            dfscores = pd.DataFrame(fit.feature_importances_)
+            dfcolumns = pd.DataFrame(X.columns)
+            featureScores = pd.concat([dfcolumns,dfscores],axis=1)
+            featureScores.columns = ['features','Importance'] 
+            featureScores = featureScores.sort_values(by=['Importance'],ascending=False)
+            st.write(featureScores)
+            
+            fig = px.bar(featureScores,x='features', y='Importance')
+            st.write(fig)
+        except:
+            st.warning("Unable to display, Streamlit came accross Error --typically a Resource Error/ Font Type Error")
       
     selected_features_train(X,y)
     
