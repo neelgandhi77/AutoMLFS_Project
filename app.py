@@ -166,16 +166,17 @@ if choice == "FS":
         st.write(fig)
 
     if chosen_FS_Method=="Extra Tree Classifier":
-        st.subheader("Best feature with Importance")
-        bestfeatures = ExtraTreesClassifier()
-        fit = bestfeatures.fit(X,y)
-        dfscores = pd.DataFrame(fit.feature_importances_)
-        dfcolumns = pd.DataFrame(X.columns)
-        featureScores = pd.concat([dfcolumns,dfscores],axis=1)
-        featureScores.columns = ['features','Importance'] 
-        featureScores = featureScores.sort_values(by=['Importance'],ascending=False)
-        st.write(featureScores)
         try:
+            st.subheader("Best feature with Importance")
+            bestfeatures = ExtraTreesClassifier()
+            fit = bestfeatures.fit(X,y)
+            dfscores = pd.DataFrame(fit.feature_importances_)
+            dfcolumns = pd.DataFrame(X.columns)
+            featureScores = pd.concat([dfcolumns,dfscores],axis=1)
+            featureScores.columns = ['features','Importance'] 
+            featureScores = featureScores.sort_values(by=['Importance'],ascending=False)
+            st.write(featureScores)
+            
             fig = px.bar(featureScores,x='features', y='Importance')
             st.write(fig)
         except:
