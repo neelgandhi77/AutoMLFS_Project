@@ -15,8 +15,6 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 
 
-
-
 st.set_page_config(
         page_title="Regression FS",
 )
@@ -61,6 +59,7 @@ if choice == "Upload":
     if file: 
         df = pd.read_csv(file, index_col=None)
         df = df.dropna()
+        df[df <  0] = 0
         df.to_csv('dataset.csv', index=None)
         st.dataframe(df)
         st.write(df.shape)
