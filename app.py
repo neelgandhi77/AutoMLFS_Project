@@ -83,7 +83,7 @@ with st.sidebar:
 
 
 if choice == "Upload or Fetch":
-    st.title("Upload Your Dataset or Fetch Data")
+    st.title("Data Collection")
     selected_option = st.selectbox('Choose the Criteria', ['Select','Upload','Covid 19 API Fetch Data'])
 
     if selected_option == 'Select':
@@ -91,12 +91,13 @@ if choice == "Upload or Fetch":
 
     if selected_option == "Upload":
         file = st.file_uploader("Upload Your Dataset")
-        if file: 
-            df = pd.read_csv(file, index_col=None)
-            df = df.dropna()
-            
-            df.to_csv('dataset.csv', index=None)
-            st.dataframe(df)
+        with st.status("Upload...", expanded=True) as status:
+            if file: 
+                df = pd.read_csv(file, index_col=None)
+                df = df.dropna()
+                
+                df.to_csv('dataset.csv', index=None)
+                st.dataframe(df)
     
     if selected_option == "Covid 19 API Fetch Data":
         with st.status("Fetching data...", expanded=True) as status:
