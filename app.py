@@ -14,6 +14,10 @@ import sklearn.metrics as metrics
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 import matplotlib.font_manager
+import h2o
+from h2o.automl import H2OAutoML
+import requests
+
 
 
 plt.rcParams.update({
@@ -74,25 +78,46 @@ if os.path.exists('./dataset.csv'):
 with st.sidebar: 
     st.image("https://th.bing.com/th/id/OIP.Npd77_nhXMQePxy_VsOGnQHaEK?rs=1&pid=ImgDetMain")
     st.title("Regression")
-    choice = st.radio("Navigation", ["Upload", "Visualization Filtered", "Visualization Static", "Modelling","FS","Additional"])
+    choice = st.radio("Navigation", ["Upload or Fetch", "Visualization Filtered --Specific One", "Visualization Static", "Modelling","FS","Additional"])
     st.info("Let's build and explore your data.")
 
 
-if choice == "Upload":
-    st.title("Upload Your Dataset")
-    file = st.file_uploader("Upload Your Dataset")
-    if file: 
-        df = pd.read_csv(file, index_col=None)
-        df = df.dropna()
-        df_numeric = df.select_dtypes(include=np.number)
-        df_numeric[df_numeric <  0] = 0
-        df.to_csv('dataset.csv', index=None)
-        st.dataframe(df)
-        st.write(df.shape)
-        st.dataframe(df.describe())
+if choice == "Upload or Fetch":
+    st.title("Upload Your Dataset or Fetch Data")
+    selected_option = st.selectbox('Choose the Criteria', ['Select','Upload','Covid 19 API Fetch Data'])
 
+    if selected_option == 'Select':
+        st.warning("Please Select Criteria")
 
-if choice == "Visualization Filtered": 
+    if selected_option == "Upload":
+        file = st.file_uploader("Upload Your Dataset")
+        if file: 
+            df = pd.read_csv(file, index_col=None)
+            df = df.dropna()
+            
+            df.to_csv('dataset.csv', index=None)
+            st.dataframe(df)
+    
+    if selected_option == "Covid 19 API Fetch Data":
+        with st.status("Fetching data...", expanded=True) as status:
+            url = "https://covid-193.p.rapidapi.com/statistics"
+
+            headers = {
+                "X-RapidAPI-Key": "baa241d513msh46120bce8d7ae00p17d4cdjsn3e4f60e0bed8",
+                "X-RapidAPI-Host": "covid-193.p.rapidapi.com"
+            }
+
+            response = requests.get(url, headers=headers)
+            data = response.json()
+            #print(response.json())
+            df = pd.json_normalize(data,'response')
+            df.columns = df.columns.str.replace(".", "_", regex=True)
+            df = df.fillna(0)
+            df.to_csv('dataset.csv', index=None)
+            st.dataframe(df)
+    
+
+if choice == "Visualization Filtered --Specific One": 
     st.header("Data Visuals",divider="rainbow")
     df_numeric = df.select_dtypes(include=np.number)
     df_numeric[df_numeric <  0] = 0
