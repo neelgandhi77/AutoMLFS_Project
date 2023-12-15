@@ -46,7 +46,7 @@ def model_train_test_results(X,y,model):
             test_size = float(st.number_input("Enter Test Size Between 0 to 1"))
     
         if st.button("Run Modelling"):
-            if (test_size > 0 and test_size <= 1):
+            if (test_size > 0 and test_size < 1):
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = test_size)
                 model.fit(X_train, y_train)
                         
@@ -71,7 +71,7 @@ def model_train_test_results(X,y,model):
         
             
             else:
-                st.warning("please Enter value in given range")
+                st.warning("Please Enter value in given range...")
 
             
 
