@@ -90,8 +90,8 @@ def selected_features_train(X,y):
         
         X = X[selected_features]    
         #st.write(X)
-        if st.button("Modeling"):
-            model_train_test_results(X[selected_features],y,model)
+     
+        model_train_test_results(X[selected_features],y,model)
             
 if os.path.exists('./dataset.csv'): 
     df = pd.read_csv('dataset.csv', index_col=None)
