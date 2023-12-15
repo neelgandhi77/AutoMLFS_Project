@@ -32,26 +32,48 @@ st.set_page_config(
 
 
 def model_train_test_results(X,y,model):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
-    model.fit(X_train, y_train)
+    
+    test_size = 0.25
+    st.subheader("Data Split Configuration")
+    split_mode = st.selectbox('Choose Mode',["Select", "Mannual","Auto (75-25)"])
+  
+    
+    if split_mode == "Select":
+        st.warning("Please Select any One")
+    
+    else:
+        if split_mode=="Mannual":
+            test_size = float(st.number_input("Enter Test Size Between 0 to 1"))
+    
+        if st.button("Run Modelling"):
+            if (test_size > 0 and test_size <= 1):
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = test_size)
+                model.fit(X_train, y_train)
+                        
+                y_pred = model.predict(X_test)
+                #st.info("Accuracy Achieved")        
+                score = round(model.score(X_test,y_test),2)*100
+                mae = metrics.mean_absolute_error(y_test, y_pred)
+                mse = metrics.mean_squared_error(y_test, y_pred)
+                rmse = np.sqrt(mse) # or mse**(0.5)  
+                r2 = metrics.r2_score(y_test,y_pred)
 
-    y_pred = model.predict(X_test)
-    #st.info("Accuracy Achieved")
-    score = round(model.score(X_test,y_test),2)*100
-    mae = metrics.mean_absolute_error(y_test, y_pred)
-    mse = metrics.mean_squared_error(y_test, y_pred)
-    rmse = np.sqrt(mse) # or mse**(0.5)  
-    r2 = metrics.r2_score(y_test,y_pred)
 
-    st.header("Results", divider='rainbow')
-    st.subheader("Score: " + str(score) + "%")
-    st.write("MAE:",mae)            
-    st.write("MSE:", mse)
-    st.write("RMSE:", rmse)
-    st.write("R-Squared:", r2)
-    fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline='ols',trendline_color_override = 'red') 
-    st.plotly_chart(fig, use_container_width=True)
+                st.header("Results", divider='rainbow')  
+                st.subheader("Score: " + str(score) + "%")
+                st.write("MAE:",mae)           
+                st.write("MSE:", mse)
+                st.write("RMSE:", rmse)
+                st.write("R-Squared:", r2)
+                fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline='ols',trendline_color_override = 'red') 
+                st.plotly_chart(fig, use_container_width=True)
+                
+        
+            
+            else:
+                st.warning("please Enter value in given range")
 
+            
 
 def selected_features_train(X,y):
     selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns),default= pd.Series(X.columns))
@@ -83,6 +105,7 @@ with st.sidebar:
 
 
 if choice == "Upload or Fetch":
+    
     st.title("Data Collection")
     selected_option = st.selectbox('Choose the Criteria', ['Select','Upload','Covid 19 API Fetch Data'])
 
@@ -166,9 +189,9 @@ if choice == "Modelling":
     if model == 'Model Selection':
         st.warning("Please Select any One Model")
     else:
-        button = st.button('Run Modelling')
-        if button==True: 
-            model_train_test_results(X,y,model)
+        #button = st.button('Run Modelling')
+        #if button==True: 
+        model_train_test_results(X,y,model)
            
 
 
