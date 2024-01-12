@@ -1,6 +1,5 @@
 import streamlit as st
-import seaborn as sn
-from pycaret.regression import *
+#from pycaret.regression import *
 from sklearn.ensemble import *
 import os 
 import numpy as np
@@ -13,12 +12,13 @@ import plotly.express as px
 import sklearn.metrics as metrics
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
-import matplotlib.font_manager
-import h2o
-from h2o.automl import H2OAutoML
+import plotly.graph_objects as go
+#import h2o
+#from h2o.automl import H2OAutoML
 import requests
+import shap
 
-
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 plt.rcParams.update({
     'font.family':'sans-serif',
@@ -29,6 +29,7 @@ plt.rcParams.update({
 st.set_page_config(
         page_title="Regression FS",
 )
+
 
 
 def model_train_test_results(X,y,model):
@@ -65,9 +66,10 @@ def model_train_test_results(X,y,model):
                 st.write("MSE:", mse)
                 st.write("RMSE:", rmse)
                 st.write("R-Squared:", r2)
-                fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline='ols',trendline_color_override = 'red') 
+                fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline="ols",trendline_color_override = 'red') 
+                #fig = px.scatter(X_test,y_test)
                 st.plotly_chart(fig, use_container_width=True)
-                
+              
         
             
             else:
@@ -100,7 +102,7 @@ if os.path.exists('./dataset.csv'):
 with st.sidebar: 
     st.image("https://th.bing.com/th/id/OIP.Npd77_nhXMQePxy_VsOGnQHaEK?rs=1&pid=ImgDetMain")
     st.title("Regression")
-    choice = st.radio("Navigation", ["Upload or Fetch", "Visualization Filtered --Specific One", "Visualization Static", "Modelling","FS","Additional"])
+    choice = st.radio("Navigation", ["Upload or Fetch", "Visualization Filtered --Specific One", "Visualization Static", "Modelling","FS","SHAP"])
     st.info("Let's build and explore your data.")
 
 
@@ -240,13 +242,53 @@ if choice == "FS":
       
     selected_features_train(X,y)
     
-        
-
-if choice == "Additional":
+    '''
     st.header("Data Visuals - Add.",divider="rainbow")
     corrmat = df.corr()
     top_corr_features = corrmat.index
     fig, ax = plt.subplots(figsize=(26,20))
     sns.heatmap(df[top_corr_features].corr(),annot=True,cmap="RdYlGn",ax=ax)
     st.write(fig)
+    '''    
+
+if choice == "SHAP":
+   
+
+    st.header("SHAP",divider="rainbow")
+    df_numeric = df.select_dtypes(include=np.number)
     
+    chosen_target = st.selectbox('Choose the Target Column', df_numeric.columns[1:])
+    X = df_numeric.drop([chosen_target],axis=1)
+    y = df[chosen_target]
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
+    
+
+    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
+
+    if model=="LinearRegression":
+        model=LinearRegression()
+    if model=="Lasso":
+        model=Lasso()
+    if model == 'Model Selection':
+        st.warning("Please Select any One Model")
+   
+     
+    if(model != "Model Selection"):
+
+        model.fit(X_train, y_train)
+
+        # Initialize the SHAP explainer
+        explainer = shap.Explainer(model, X_train)
+
+        # Calculate SHAP values for all features
+        shap_values = explainer(X_train)
+        st.pyplot(shap.summary_plot(shap_values, X_train, feature_names=X_train.columns, plot_type="bar"))
+        st.pyplot(shap.summary_plot(shap_values, X_train, feature_names= X_train.columns))
+        #st.pyplot(shap.plots.bar(shap_values[0]))
+        
+        selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns))
+        st.write(selected_features)
+
+        model_train_test_results(X[selected_features],y,model)
+
