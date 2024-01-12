@@ -12,7 +12,7 @@ click==8.1.7
 cloudpickle==3.0.0
 colorama==0.4.6
 comm==0.2.0
-shap=0.44.0
+shap==0.44.0
 warnings
 contourpy==1.2.0
 cycler==0.12.1
