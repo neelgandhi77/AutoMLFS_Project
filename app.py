@@ -12,16 +12,14 @@ import plotly.express as px
 import sklearn.metrics as metrics
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
-import plotly.graph_objects as go
-#import h2o
-#from h2o.automl import H2OAutoML
+#import plotly.graph_objects as go
+
 import requests
 import shap
 
-#Classification
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier,GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -32,7 +30,7 @@ plt.rcParams.update({
 
 
 st.set_page_config(
-        page_title="Regression FS",
+        page_title="AutoML FS",
 )
 
 
