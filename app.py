@@ -162,7 +162,7 @@ if os.path.exists('./dataset.csv'):
 
 with st.sidebar: 
     st.image("https://th.bing.com/th/id/OIP.Npd77_nhXMQePxy_VsOGnQHaEK?rs=1&pid=ImgDetMain")
-    st.title("Regression")
+    st.title("AutoML")
     choice = st.radio("Navigation", ["Upload or Fetch", "Visualization Filtered --Specific One", "Visualization Static", "Modelling","FS","SHAP"])
     st.info("Let's build and explore your data.")
 
