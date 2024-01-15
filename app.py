@@ -18,6 +18,11 @@ import plotly.graph_objects as go
 import requests
 import shap
 
+#Classification
+from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier,GradientBoostingClassifier
+
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 plt.rcParams.update({
@@ -32,7 +37,7 @@ st.set_page_config(
 
 
 
-def model_train_test_results(X,y,model):
+def model_train_test_results(X,y,model,tag):
     
     test_size = 0.25
     st.subheader("Data Split Configuration")
@@ -52,49 +57,107 @@ def model_train_test_results(X,y,model):
                 model.fit(X_train, y_train)
                         
                 y_pred = model.predict(X_test)
-                #st.info("Accuracy Achieved")        
-                score = round(model.score(X_test,y_test),2)*100
-                mae = metrics.mean_absolute_error(y_test, y_pred)
-                mse = metrics.mean_squared_error(y_test, y_pred)
-                rmse = np.sqrt(mse) # or mse**(0.5)  
-                r2 = metrics.r2_score(y_test,y_pred)
+
+                if tag =="Regression":
+
+                    #st.info("Accuracy Achieved")        
+                    score = round(model.score(X_test,y_test),2)*100
+                    mae = metrics.mean_absolute_error(y_test, y_pred)
+                    mse = metrics.mean_squared_error(y_test, y_pred)
+                    rmse = np.sqrt(mse) # or mse**(0.5)  
+                    r2 = metrics.r2_score(y_test,y_pred)
 
 
-                st.header("Results", divider='rainbow')  
-                st.subheader("Score: " + str(score) + "%")
-                st.write("MAE:",mae)           
-                st.write("MSE:", mse)
-                st.write("RMSE:", rmse)
-                st.write("R-Squared:", r2)
-                fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline="ols",trendline_color_override = 'red') 
-                #fig = px.scatter(X_test,y_test)
-                st.plotly_chart(fig, use_container_width=True)
-              
+                    st.header("Results", divider='rainbow')  
+                    st.subheader("Score: " + str(score) + "%")
+                    st.write("MAE:",mae)           
+                    st.write("MSE:", mse)
+                    st.write("RMSE:", rmse)
+                    st.write("R-Squared:", r2)
+                    fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline="ols",trendline_color_override = 'red') 
+                    #fig = px.scatter(X_test,y_test)
+                    st.plotly_chart(fig, use_container_width=True)
+                     
+                else:
+
+                    score = accuracy_score(y_test, y_pred)
+                    st.header("Results", divider='rainbow')  
+                    st.subheader("Score: " + str(score) + "%")
+
+                    #Generate the confusion matrix
+                    cf_matrix = confusion_matrix(y_test, y_pred)
+                    fig,ax = plt.subplots()
+                    
+
+                    ax.set_title('Confusion Matrix\n\n')
+                    ax.set_xlabel('\nPredicted Values')
+                    ax.set_ylabel('Actual Values ')
+
+                    ## Ticket labels - List must be in alphabetical order
+                    ax.xaxis.set_ticklabels(['False','True'])
+                    ax.yaxis.set_ticklabels(['False','True'])
+                    sns.heatmap(cf_matrix, annot=True, cmap='Blues',ax=ax)
+                    st.write(fig)
+
         
             
             else:
                 st.warning("Please Enter value in given range...")
 
-            
+def check_problem(chosen_target):
+  
+    problem_type=""
+    
+    target_data_type = df[chosen_target].dtype
 
-def selected_features_train(X,y):
+    # Count the number of unique values in the target column
+    unique_values_count = df[chosen_target].nunique()
+
+    # Determine if it's more suitable for classification or regression
+    if target_data_type == 'object' or unique_values_count <= 10:
+        problem_type = "Classification"
+    else:
+        problem_type = "Regression"
+
+    return problem_type
+
+
+def selected_features_train(X,y,chosen_target):
     selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns),default= pd.Series(X.columns))
     st.write(selected_features)
-    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
 
-    if model=="LinearRegression":
-        model=LinearRegression()
-    if model=="Lasso":
-        model=Lasso()
-    if model == 'Model Selection':
-        st.warning("Please Select any One Model")
+    problem_type = check_problem(chosen_target)
+
+    if problem_type == "Regression":
+        model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
+
+        if model=="LinearRegression":
+            model=LinearRegression()
+        if model=="Lasso":
+            model=Lasso()
+        if model == 'Model Selection':
+            st.warning("Please Select any One Model")
+
     else:
+        
+        model = st.selectbox('Choose Model',['Model Selection', 'Random Forest','Decision Tree'])
+
+        if model=="Random Forest":
+            model= RandomForestClassifier(n_estimators=100,random_state=1200)
+        if model=="Decision Tree":
+            model= DecisionTreeClassifier(criterion="gini",
+                                      random_state=100)
+        if model == 'Model Selection':
+            st.warning("Please Select any One Model")
+    
+    if(model !="Model Selection"):
         
         X = X[selected_features]    
         #st.write(X)
      
-        model_train_test_results(X[selected_features],y,model)
-            
+        model_train_test_results(X[selected_features],y,model,problem_type)
+   
+
 if os.path.exists('./dataset.csv'): 
     df = pd.read_csv('dataset.csv', index_col=None)
 
@@ -119,6 +182,12 @@ if choice == "Upload or Fetch":
         with st.status("Upload...", expanded=True) as status:
             if file: 
                 df = pd.read_csv(file, index_col=None)
+                numeric_columns = df.select_dtypes(include=['number']).columns
+
+                # Fill missing values with mean for numeric columns
+                df[numeric_columns] = df[numeric_columns].fillna(df[numeric_columns].mean())
+                if "Pass/Fail" in df.columns:
+                    df.loc[df["Pass/Fail"] == -1, "Pass/Fail"] = 0
                 df = df.dropna()
                 
                 df.to_csv('dataset.csv', index=None)
@@ -180,20 +249,39 @@ if choice == "Modelling":
     df_numeric = df.select_dtypes(include=np.number)
     
     chosen_target = st.selectbox('Choose the Target Column', df_numeric.columns[1:])
-    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
+    
     X = df_numeric.drop([chosen_target],axis=1)
     y = df[chosen_target]
     
-    if model=="LinearRegression":
-        model=LinearRegression()
-    if model=="Lasso":
-        model=Lasso()
-    if model == 'Model Selection':
-        st.warning("Please Select any One Model")
+    model=""
+    problem_type = check_problem(chosen_target)
+
+    if problem_type == "Regression":
+        model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
+
+        if model=="LinearRegression":
+            model=LinearRegression()
+        if model=="Lasso":
+            model=Lasso()
+        if model == 'Model Selection':
+            st.warning("Please Select any One Model")
+       
+        
     else:
-        #button = st.button('Run Modelling')
-        #if button==True: 
-        model_train_test_results(X,y,model)
+        
+        model = st.selectbox('Choose Model',['Model Selection', 'Random Forest','Decision Tree'])
+
+        if model=="Random Forest":
+            model= RandomForestClassifier(n_estimators=100,random_state=1200)
+        if model=="Decision Tree":
+            model= DecisionTreeClassifier(criterion="gini",
+                                      random_state=100)
+        if model == 'Model Selection':
+            st.warning("Please Select any One Model")
+        
+    if(model != "Model Selection"):
+        model_train_test_results(X,y,model,problem_type)
+  
            
 
 
@@ -240,55 +328,73 @@ if choice == "FS":
         except:
             st.warning("Unable to display, Streamlit came accross Error --typically a Resource Error/ Font Type Error")
       
-    selected_features_train(X,y)
-    
-    '''
-    st.header("Data Visuals - Add.",divider="rainbow")
-    corrmat = df.corr()
-    top_corr_features = corrmat.index
-    fig, ax = plt.subplots(figsize=(26,20))
-    sns.heatmap(df[top_corr_features].corr(),annot=True,cmap="RdYlGn",ax=ax)
-    st.write(fig)
-    '''    
+    selected_features_train(X,y,chosen_target)
 
 if choice == "SHAP":
    
 
     st.header("SHAP",divider="rainbow")
     df_numeric = df.select_dtypes(include=np.number)
+  
     
     chosen_target = st.selectbox('Choose the Target Column', df_numeric.columns[1:])
+    problem_type= check_problem(chosen_target)
+
     X = df_numeric.drop([chosen_target],axis=1)
     y = df[chosen_target]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
     
+    if problem_type == "Regression":
+        model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
 
-    model = st.selectbox('Choose Model',['Model Selection', 'LinearRegression','Lasso'])
+        if model=="LinearRegression":
+            model=LinearRegression()
+        if model=="Lasso":
+            model=Lasso()
+        if model == 'Model Selection':
+            st.warning("Please Select any One Model")
+    else:
+        
+        model = st.selectbox('Choose Model',['Model Selection', 'Random Forest','Decision Tree'])
 
-    if model=="LinearRegression":
-        model=LinearRegression()
-    if model=="Lasso":
-        model=Lasso()
-    if model == 'Model Selection':
-        st.warning("Please Select any One Model")
-   
-     
+        if model=="Random Forest":
+            model= RandomForestClassifier(n_estimators=100,random_state=1200)
+        if model=="Decision Tree":
+            model= DecisionTreeClassifier(criterion="gini",
+                                      random_state=100)
+        if model == 'Model Selection':
+            st.warning("Please Select any One Model")
+    
+        
     if(model != "Model Selection"):
 
         model.fit(X_train, y_train)
-
-        # Initialize the SHAP explainer
-        explainer = shap.Explainer(model, X_train)
-
-        # Calculate SHAP values for all features
-        shap_values = explainer(X_train)
-        st.pyplot(shap.summary_plot(shap_values, X_train, feature_names=X_train.columns, plot_type="bar"))
-        st.pyplot(shap.summary_plot(shap_values, X_train, feature_names= X_train.columns))
-        #st.pyplot(shap.plots.bar(shap_values[0]))
         
+        # Initialize the SHAP explainer
+        if problem_type == "Regression":
+       
+            explainer = shap.Explainer(model, X_train)
+            # Calculate SHAP values for all features
+            shap_values = explainer(X_train)
+            st.pyplot(shap.summary_plot(shap_values, X_train, feature_names=X_train.columns, plot_type="bar"))
+            st.pyplot(shap.summary_plot(shap_values, X_train, feature_names= X_train.columns))
+            #st.pyplot(shap.plots.bar(shap_values[0]))
+
+        else:
+            explainer = shap.TreeExplainer(model)
+
+            # Calculate SHAP values for all features
+            shap_values = explainer.shap_values(X_train)
+            st.header("For Class 0")
+            st.pyplot(shap.summary_plot(shap_values[0], X_train, plot_type="bar"))
+            st.header("For Class 1")
+            st.pyplot(shap.summary_plot(shap_values[1], X_train, plot_type="bar"))
+            #st.pyplot(shap.summary_plot(shap_values, X_train, feature_names= X_train.columns))
+            #st.pyplot(shap.plots.bar(shap_values[0]))
+            
         selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns))
         st.write(selected_features)
 
-        model_train_test_results(X[selected_features],y,model)
+        model_train_test_results(X[selected_features],y,model,tag = problem_type)
 
