@@ -56,8 +56,7 @@ def selected_feature(X_train,y_train,model,problem_type):
         feature_importance = pd.DataFrame(shap_values[1], columns=X_train.columns).abs().mean().sort_values(ascending=False)
 
     return feature_importance
-                
-        
+                      
 def model_train_test_results(X,y,model,tag):
     
     test_size = 0.25
@@ -142,7 +141,6 @@ def check_problem(chosen_target):
 
     return problem_type
 
-
 def selected_features_train(X,y,chosen_target):
     selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns),default= pd.Series(X.columns))
     st.write(selected_features)
@@ -197,7 +195,7 @@ if choice == "Data Access":
     st.title("Data Access")
     selected_option = st.selectbox('Choose the Criteria', ['Select','Upload','Covid 19 API Fetch Data'])
 
-    st.image(r"Images\upload.png")
+    st.image("Images/upload.png")
     if selected_option == 'Select':
         st.warning("Please Select Criteria")
 
@@ -399,7 +397,7 @@ if choice == "Train & Test":
             #top_features = feature_importance.index[:7]
             st.write(top_features.index[:7])
             with st.form("my_form"):
-                
+
                 selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns))
                 st.write(selected_features)
                 submitted = st.form_submit_button("Add Features",on_click=None)
@@ -410,8 +408,7 @@ if choice == "Train & Test":
                 st.warning("Please select at least one Feature")
             #if submitted:
               
-                
-        
+
 if choice == "Deploy":
     st.header("Deploy",divider="rainbow")
     Data_name = st.text_input(
