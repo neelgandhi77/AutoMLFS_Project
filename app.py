@@ -44,14 +44,14 @@ def selected_feature(X_train,y_train,model,problem_type):
     if problem_type == "Regression":
         explainer = shap.Explainer(model, X_train)
         shap_values = explainer(X_train)
-        #st.pyplot(shap.summary_plot(shap_values, X_train, feature_names=X_train.columns, plot_type="bar"))
+        st.pyplot(shap.summary_plot(shap_values, X_train, feature_names=X_train.columns, plot_type="bar"))
         #st.pyplot(shap.summary_plot(shap_values, X_train, feature_names= X_train.columns))
         feature_importance = pd.DataFrame(shap_values.values, columns=X_train.columns).abs().mean().sort_values(ascending=False)
             
     else:
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(X_for_processing)
-        #st.pyplot(shap.summary_plot(shap_values[0], X_train, plot_type="bar")) 
+        st.pyplot(shap.summary_plot(shap_values[1], X_train, plot_type="bar")) 
         #st.pyplot(shap.summary_plot(shap_values, X_train, feature_names= X_train.columns)
         feature_importance = pd.DataFrame(shap_values[1], columns=X_train.columns).abs().mean().sort_values(ascending=False)
 
@@ -81,43 +81,41 @@ def model_train_test_results(X,y,model,tag):
                 if tag =="Regression":
 
                     #st.info("Accuracy Achieved")        
-                    score = round(model.score(X_test,y_test),2)*100
-                    mae = metrics.mean_absolute_error(y_test, y_pred)
-                    mse = metrics.mean_squared_error(y_test, y_pred)
-                    rmse = np.sqrt(mse) # or mse**(0.5)  
-                    r2 = metrics.r2_score(y_test,y_pred)
+                    score = round(model.score(X_test,y_test),5) * 100
+                    #mae = metrics.mean_absolute_error(y_test, y_pred)
+                    #mse = metrics.mean_squared_error(y_test, y_pred)
+                    #rmse = np.sqrt(mse) # or mse**(0.5)  
+                    #r2 = metrics.r2_score(y_test,y_pred)
 
 
                     st.header("Results", divider='rainbow')  
                     st.subheader("Score: " + str(score) + "%")
-                    st.write("MAE:",mae)           
-                    st.write("MSE:", mse)
-                    st.write("RMSE:", rmse)
-                    st.write("R-Squared:", r2)
-                    fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline="ols",trendline_color_override = 'red') 
-                    #fig = px.scatter(X_test,y_test)
-                    st.plotly_chart(fig, use_container_width=True)
+                    #st.write("MAE:",mae)           
+                    #st.write("MSE:", mse)
+                    #st.write("RMSE:", rmse)
+                    #st.write("R-Squared:", r2)
+                    #fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline="ols",trendline_color_override = 'red') 
+                    #st.plotly_chart(fig, use_container_width=True)
                      
                 else:
 
-                    score = accuracy_score(y_test, y_pred)
+                    score = round(accuracy_score(y_test, y_pred),5) * 100
                     st.header("Results", divider='rainbow')  
                     st.subheader("Score: " + str(score) + "%")
 
                     #Generate the confusion matrix
-                    cf_matrix = confusion_matrix(y_test, y_pred)
-                    fig,ax = plt.subplots()
+                    #cf_matrix = confusion_matrix(y_test, y_pred)
+                    #fig,ax = plt.subplots()
                     
 
-                    ax.set_title('Confusion Matrix\n\n')
-                    ax.set_xlabel('\nPredicted Values')
-                    ax.set_ylabel('Actual Values ')
+                    #ax.set_title('Confusion Matrix\n\n')
+                    #ax.set_xlabel('\nPredicted Values')
+                    #ax.set_ylabel('Actual Values ')
 
-                    ## Ticket labels - List must be in alphabetical order
-                    ax.xaxis.set_ticklabels(['False','True'])
-                    ax.yaxis.set_ticklabels(['False','True'])
-                    sns.heatmap(cf_matrix, annot=True, cmap='Blues',ax=ax)
-                    st.write(fig)
+                    #ax.xaxis.set_ticklabels(['False','True'])
+                    #ax.yaxis.set_ticklabels(['False','True'])
+                    #sns.heatmap(cf_matrix, annot=True, cmap='Blues',ax=ax)
+                    #st.write(fig)
 
         
             
@@ -195,10 +193,12 @@ if choice == "Data Access":
     st.title("Data Access")
     selected_option = st.selectbox('Choose the Criteria', ['Select','Upload','Covid 19 API Fetch Data'])
 
-    st.image("Images/upload.png")
+    
     if selected_option == 'Select':
         st.warning("Please Select Criteria")
-
+    
+    st.image("Images/upload3.png")
+    
     if selected_option == "Upload":
         file = st.file_uploader("Upload Your Dataset")
         with st.status("Upload...", expanded=True) as status:
@@ -369,6 +369,8 @@ if choice == "Train & Test":
 
     X_train, X_test, y_train, y_test = train_test_split(X_for_processing, y_for_processing, test_size = 0.25)
     
+    st.selectbox('Choose Process',['Manual ML','AutoML'])
+
     if problem_type == "Regression":
         model = st.selectbox('Choose Model',['Linear Regression','Lasso'])
 
@@ -395,7 +397,7 @@ if choice == "Train & Test":
         
             top_features = selected_feature(X_train,y_train,model,problem_type)
             #top_features = feature_importance.index[:7]
-            st.write(top_features.index[:7])
+            #st.write(top_features.index[:7])
             with st.form("my_form"):
 
                 selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns))
