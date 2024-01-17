@@ -12,7 +12,7 @@ import plotly.express as px
 import sklearn.metrics as metrics
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
-import plotly.graph_objects as go
+#import plotly.graph_objects as go
 
 import requests
 import shap
