@@ -205,8 +205,10 @@ if choice == "Data Access":
             if file: 
                 df = pd.read_csv(file, index_col=None)
                 numeric_columns = df.select_dtypes(include=['number']).columns
-
+                #st.write("Initially")
+                #st.write(df.isna().sum())
                 # Fill missing values with mean for numeric columns
+                st.header("Preprocessed",divider = "rainbow")
                 df[numeric_columns] = df[numeric_columns].fillna(df[numeric_columns].mean())
                 if "Pass/Fail" in df.columns:
                     df.loc[df["Pass/Fail"] == -1, "Pass/Fail"] = 0
@@ -214,6 +216,7 @@ if choice == "Data Access":
                 
                 df.to_csv('dataset.csv', index=None)
                 st.dataframe(df)
+                
     
     if selected_option == "Covid 19 API Fetch Data":
         with st.status("Fetching data...", expanded=True) as status:
