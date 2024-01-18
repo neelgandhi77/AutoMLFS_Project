@@ -369,7 +369,7 @@ if choice == "Train & Test":
 
     X_train, X_test, y_train, y_test = train_test_split(X_for_processing, y_for_processing, test_size = 0.25)
     
-    st.selectbox('Choose Process',['Manual ML','AutoML'])
+    st.selectbox('Choose Process',['AutoML','Manual ML',])
 
     if problem_type == "Regression":
         model = st.selectbox('Choose Model',['Linear Regression','Lasso'])
