@@ -20,6 +20,7 @@ from shap import Explainer
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+import config
 
 
 
@@ -35,23 +36,32 @@ st.set_page_config(
         page_title="AutoML FS",
 )
 
+css = r'''
+    <style>
+        [data-testid="stForm"] {border: 0px}
+    </style>
+'''
+
+st.markdown(css, unsafe_allow_html=True)
 
 def selected_feature(X_train,y_train,model,problem_type):
-    st.header("Recommended Features")
-            
-    model.fit(X_train, y_train)
-
+   
     if problem_type == "Regression":
         explainer = shap.Explainer(model, X_train)
         shap_values = explainer(X_train)
-        st.pyplot(shap.summary_plot(shap_values, X_train, feature_names=X_train.columns, plot_type="bar"))
+        shap.summary_plot(shap_values, X_train, feature_names=X_train.columns, plot_type="bar")
+        #shap.summary_plot(shap_values, X_train, feature_names=X_train.columns, plot_type="bar")
+        plt.savefig("Images/SHAP Values.png")
+        #plt.savefig(shap.summary_plot(shap_values, X_train, feature_names=X_train.columns, plot_type="bar"))
         #st.pyplot(shap.summary_plot(shap_values, X_train, feature_names= X_train.columns))
         feature_importance = pd.DataFrame(shap_values.values, columns=X_train.columns).abs().mean().sort_values(ascending=False)
             
     else:
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(X_for_processing)
-        st.pyplot(shap.summary_plot(shap_values[1], X_train, plot_type="bar")) 
+        #st.pyplot(shap.summary_plot(shap_values[1], X_train, plot_type="bar"))
+        shap.summary_plot(shap_values[1], X_train, plot_type="bar")
+        plt.savefig("Images/SHAP Values.png")
         #st.pyplot(shap.summary_plot(shap_values, X_train, feature_names= X_train.columns)
         feature_importance = pd.DataFrame(shap_values[1], columns=X_train.columns).abs().mean().sort_values(ascending=False)
 
@@ -179,6 +189,7 @@ if os.path.exists('./dataset.csv'):
     df = pd.read_csv('dataset.csv', index_col=None)
 
 
+
 with st.sidebar: 
     st.image("https://th.bing.com/th/id/OIP.Npd77_nhXMQePxy_VsOGnQHaEK?rs=1&pid=ImgDetMain")
     st.title("AutoML")
@@ -189,6 +200,7 @@ with st.sidebar:
 
 
 if choice == "Data Access":
+    
     
     st.title("Data Access")
     selected_option = st.selectbox('Choose the Criteria', ['Select','Upload','Covid 19 API Fetch Data'])
@@ -215,6 +227,7 @@ if choice == "Data Access":
                 df = df.dropna()
                 
                 df.to_csv('dataset.csv', index=None)
+               
                 st.dataframe(df)
                 
     
@@ -234,7 +247,12 @@ if choice == "Data Access":
             df.columns = df.columns.str.replace(".", "_", regex=True)
             df = df.fillna(0)
             df.to_csv('dataset.csv', index=None)
+
             st.dataframe(df)
+   
+
+    config.process_count = 0
+    
     
 
 if choice == "Visualization Filtered --Specific One": 
@@ -355,14 +373,12 @@ if choice == "FS":
 
 
 if choice == "Train & Test":
-   
-    #process_counter = False
-   
+                
     st.header("SHAP",divider="rainbow")
     df_numeric = df.select_dtypes(include=np.number)
   
     
-    chosen_target = st.selectbox('Choose the Target Column', df_numeric.columns[1:])
+    chosen_target = st.selectbox('Choose the Target Column', df_numeric.columns[1:],len(df_numeric.columns)-2)
     problem_type= check_problem(chosen_target)
 
     X = df_numeric.drop([chosen_target],axis=1)
@@ -370,13 +386,13 @@ if choice == "Train & Test":
     X_for_processing = X
     y_for_processing = y
 
-    X_train, X_test, y_train, y_test = train_test_split(X_for_processing, y_for_processing, test_size = 0.25)
+    X_train, X_test, y_train, y_test = train_test_split(X_for_processing, y_for_processing, test_size = 0.25,random_state=42)
     
     st.selectbox('Choose Process',['AutoML','Manual ML',])
 
     if problem_type == "Regression":
         model = st.selectbox('Choose Model',['Linear Regression','Lasso'])
-
+        config.process_count=0
         if model=="Linear Regression":
             model=LinearRegression()
         if model=="Lasso":
@@ -386,28 +402,47 @@ if choice == "Train & Test":
     else:
         
         model = st.selectbox('Choose Model',['Random Forest','Decision Tree'])
-
+        config.process_count=0
         if model=="Random Forest":
             model= RandomForestClassifier(n_estimators=100,random_state=1200)
         if model=="Decision Tree":
-            model= DecisionTreeClassifier(criterion="gini",
-                                      random_state=100)
+            model= DecisionTreeClassifier(criterion="gini",random_state=100)
         if model == 'Model Selection':
             st.warning("Please Select any One Model")
     
-
+    
     if(model != "Model Selection"):
-        
-            top_features = selected_feature(X_train,y_train,model,problem_type)
+         shap_show_bool = False
+         with st.spinner('Proceesing...'): 
+            
+            with st.form("my_reco"):
+                submitted_reco = st.form_submit_button("Recommendations",on_click=None)
+               
+                if (config.process_count==0):
+                    
+                    if submitted_reco:
+                        model.fit(X_train, y_train)
+                        config.process_count += 1
+                      
+                try:
+                    top_features = selected_feature(X_train,y_train,model,problem_type)
+                    shap_show_bool= False
+                except:
+                    pass
+               
+                    
             #top_features = feature_importance.index[:7]
             #st.write(top_features.index[:7])
+           
             with st.form("my_form"):
-
+                st.header("Recommended Features")
+                st.image("Images/SHAP Values.png")
                 selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns))
                 st.write(selected_features)
                 submitted = st.form_submit_button("Add Features",on_click=None)
+                
             try:
-
+                
                 model_train_test_results(X[selected_features],y,model,tag=problem_type)
             except:
                 st.warning("Please select at least one Feature")
