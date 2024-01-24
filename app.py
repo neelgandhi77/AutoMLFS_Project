@@ -12,8 +12,6 @@ import plotly.express as px
 import sklearn.metrics as metrics
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
-#import plotly.graph_objects as go
-
 import requests
 import shap
 from shap import Explainer
@@ -23,14 +21,12 @@ from sklearn.ensemble import RandomForestClassifier
 import config
 
 
-
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 plt.rcParams.update({
     'font.family':'sans-serif',
     'font.sans-serif':['Liberation Sans'],
     })
-
 
 st.set_page_config(
         page_title="AutoML FS",
@@ -41,8 +37,14 @@ css = r'''
         [data-testid="stForm"] {border: 0px}
     </style>
 '''
-
 st.markdown(css, unsafe_allow_html=True)
+
+def powerset(s):
+    subsets =[]
+    x = len(s)
+    for i in range(1 << x):
+        subsets.append([s[j] for j in range(x) if (i & (1 << j))])
+    return subsets
 
 def selected_feature(X_train,y_train,model,problem_type):
    
@@ -64,9 +66,27 @@ def selected_feature(X_train,y_train,model,problem_type):
         plt.savefig("Images/SHAP Values.png")
         #st.pyplot(shap.summary_plot(shap_values, X_train, feature_names= X_train.columns)
         feature_importance = pd.DataFrame(shap_values[1], columns=X_train.columns).abs().mean().sort_values(ascending=False)
-
-    return feature_importance
+ 
+    return feature_importance.index
                       
+def Temp_model_train_test_results(X,y,model,tag):
+    test_size = 0.25
+    #st.write(X)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = test_size,random_state=42)
+    model.fit(X_train, y_train)
+                        
+    y_pred = model.predict(X_test)
+
+    if tag =="Regression":
+        mae = metrics.mean_absolute_error(y_test, y_pred)
+        score = round(mae,6)
+                
+    else:
+        score = round(accuracy_score(y_test, y_pred),6) * 100
+
+    #st.write(score)
+    return score           
+
 def model_train_test_results(X,y,model,tag):
     
     test_size = 0.25
@@ -83,7 +103,7 @@ def model_train_test_results(X,y,model,tag):
     
         if st.button("Run Modelling"):
             if (test_size > 0 and test_size < 1):
-                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = test_size)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = test_size,random_state=42)
                 model.fit(X_train, y_train)
                         
                 y_pred = model.predict(X_test)
@@ -91,15 +111,16 @@ def model_train_test_results(X,y,model,tag):
                 if tag =="Regression":
 
                     #st.info("Accuracy Achieved")        
-                    score = round(model.score(X_test,y_test),5) * 100
-                    #mae = metrics.mean_absolute_error(y_test, y_pred)
+                    #score = round(model.score(X_test,y_test),5) * 100
+                    mae = metrics.mean_absolute_error(y_test, y_pred)
+                    score = round(mae,6)
                     #mse = metrics.mean_squared_error(y_test, y_pred)
                     #rmse = np.sqrt(mse) # or mse**(0.5)  
                     #r2 = metrics.r2_score(y_test,y_pred)
 
 
                     st.header("Results", divider='rainbow')  
-                    st.subheader("Score: " + str(score) + "%")
+                    st.subheader("MAE Score: " + str(score))
                     #st.write("MAE:",mae)           
                     #st.write("MSE:", mse)
                     #st.write("RMSE:", rmse)
@@ -109,25 +130,23 @@ def model_train_test_results(X,y,model,tag):
                      
                 else:
 
-                    score = round(accuracy_score(y_test, y_pred),5) * 100
+                    score = round(accuracy_score(y_test, y_pred),6) * 100
                     st.header("Results", divider='rainbow')  
                     st.subheader("Score: " + str(score) + "%")
 
                     #Generate the confusion matrix
-                    #cf_matrix = confusion_matrix(y_test, y_pred)
-                    #fig,ax = plt.subplots()
+                    cf_matrix = confusion_matrix(y_test, y_pred)
+                    fig,ax = plt.subplots()
                     
 
-                    #ax.set_title('Confusion Matrix\n\n')
-                    #ax.set_xlabel('\nPredicted Values')
-                    #ax.set_ylabel('Actual Values ')
+                    ax.set_title('Confusion Matrix\n\n')
+                    ax.set_xlabel('\nPredicted Values')
+                    ax.set_ylabel('Actual Values ')
 
-                    #ax.xaxis.set_ticklabels(['False','True'])
-                    #ax.yaxis.set_ticklabels(['False','True'])
-                    #sns.heatmap(cf_matrix, annot=True, cmap='Blues',ax=ax)
-                    #st.write(fig)
-
-        
+                    ax.xaxis.set_ticklabels(['False','True'])
+                    ax.yaxis.set_ticklabels(['False','True'])
+                    sns.heatmap(cf_matrix, annot=True, cmap='Blues',ax=ax)
+                    st.write(fig)
             
             else:
                 st.warning("Please Enter value in given range...")
@@ -187,7 +206,6 @@ def selected_features_train(X,y,chosen_target):
 
 if os.path.exists('./dataset.csv'): 
     df = pd.read_csv('dataset.csv', index_col=None)
-
 
 
 with st.sidebar: 
@@ -252,8 +270,7 @@ if choice == "Data Access":
    
 
     config.process_count = 0
-    
-    
+
 
 if choice == "Visualization Filtered --Specific One": 
     st.header("Data Visuals",divider="rainbow")
@@ -374,6 +391,7 @@ if choice == "FS":
 
 if choice == "Train & Test":
                 
+    
     st.header("SHAP",divider="rainbow")
     df_numeric = df.select_dtypes(include=np.number)
   
@@ -388,7 +406,7 @@ if choice == "Train & Test":
 
     X_train, X_test, y_train, y_test = train_test_split(X_for_processing, y_for_processing, test_size = 0.25,random_state=42)
     
-    st.selectbox('Choose Process',['AutoML','Manual ML',])
+    st.selectbox('Choose Process',['AutoML','Manual ML'])
 
     if problem_type == "Regression":
         model = st.selectbox('Choose Model',['Linear Regression','Lasso'])
@@ -412,8 +430,8 @@ if choice == "Train & Test":
     
     
     if(model != "Model Selection"):
-         shap_show_bool = False
-         with st.spinner('Proceesing...'): 
+         
+        with st.spinner('Proceesing...'): 
             
             with st.form("my_reco"):
                 submitted_reco = st.form_submit_button("Recommendations",on_click=None)
@@ -425,28 +443,51 @@ if choice == "Train & Test":
                         config.process_count += 1
                       
                 try:
-                    top_features = selected_feature(X_train,y_train,model,problem_type)
-                    shap_show_bool= False
+                    config.top_features = selected_feature(X_train,y_train,model,problem_type)
+                  
+                    
                 except:
                     pass
                
+        
+
+                
+
+    if(len(config.top_features)):
+        st.header("Recommended Features")
+        st.image("Images/SHAP Values.png")
+        top_features =  config.top_features.to_list()
+        subsets = powerset(top_features[:3])
+        subsets = [ele for ele in subsets if ele != []]
                     
-            #top_features = feature_importance.index[:7]
-            #st.write(top_features.index[:7])
+        accuracy_dict = dict()
+        for i in range(len(subsets)):
+            
+            score  = Temp_model_train_test_results(X[subsets[i]],y,model,tag=problem_type)
+            if problem_type == "Regression":
+                accuracy_dict[str(subsets[i])] = (str(score))
+            else: 
+                accuracy_dict[str(subsets[i])] = (str(score) + " %")
+        #st.write(score)
+        if problem_type == "Regression":
+            st.warning("MAE Score")
+        st.write(accuracy_dict)
+            
+                
            
-            with st.form("my_form"):
-                st.header("Recommended Features")
-                st.image("Images/SHAP Values.png")
-                selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns))
-                st.write(selected_features)
-                submitted = st.form_submit_button("Add Features",on_click=None)
-                
-            try:
-                
-                model_train_test_results(X[selected_features],y,model,tag=problem_type)
-            except:
-                st.warning("Please select at least one Feature")
-            #if submitted:
+        with st.form("my_form"):
+            
+            
+            
+            selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns))
+            st.write(selected_features)
+            submitted = st.form_submit_button("Add Features",on_click=None)
+            
+        try:
+            model_train_test_results(X[selected_features],y,model,tag=problem_type)
+        except:
+            st.warning("Please select at least one Feature")
+        
               
 
 if choice == "Deploy":
