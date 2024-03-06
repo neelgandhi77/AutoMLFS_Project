@@ -431,7 +431,7 @@ if choice == "Train & Test":
     
     if(model != "Model Selection"):
          
-        with st.spinner('Proceesing...'): 
+        with st.spinner('Processing...'): 
             
             with st.form("my_reco"):
                 submitted_reco = st.form_submit_button("Recommendations",on_click=None)
