@@ -79,10 +79,10 @@ def Temp_model_train_test_results(X,y,model,tag):
 
     if tag =="Regression":
         mae = metrics.mean_absolute_error(y_test, y_pred)
-        score = round(mae,0)
+        score = round(mae,3)
                 
     else:
-        score = round(accuracy_score(y_test, y_pred),1) * 100
+        score = round(accuracy_score(y_test, y_pred),3) * 100
 
     #st.write(score)
     return score           
@@ -111,9 +111,9 @@ def model_train_test_results(X,y,model,tag):
                 if tag =="Regression":
 
                     #st.info("Accuracy Achieved")        
-                    #score = round(model.score(X_test,y_test),5) * 100
+                    #score = round(model.score(X_test,y_test),3) * 100
                     mae = metrics.mean_absolute_error(y_test, y_pred)
-                    score = round(mae,0)
+                    score = round(mae,3)
                     #mse = metrics.mean_squared_error(y_test, y_pred)
                     #rmse = np.sqrt(mse) # or mse**(0.5)  
                     #r2 = metrics.r2_score(y_test,y_pred)
@@ -130,7 +130,7 @@ def model_train_test_results(X,y,model,tag):
                      
                 else:
 
-                    score = round(accuracy_score(y_test, y_pred),1) * 100
+                    score = round(accuracy_score(y_test, y_pred),3) * 100
                     st.header("Results", divider='rainbow')  
                     st.subheader("Score: " + str(score) + "%")
 
