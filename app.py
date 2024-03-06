@@ -82,7 +82,7 @@ def Temp_model_train_test_results(X,y,model,tag):
         score = round(mae,0)
                 
     else:
-        score = round(accuracy_score(y_test, y_pred),0) * 100
+        score = round(accuracy_score(y_test, y_pred),1) * 100
 
     #st.write(score)
     return score           
@@ -130,7 +130,7 @@ def model_train_test_results(X,y,model,tag):
                      
                 else:
 
-                    score = round(accuracy_score(y_test, y_pred),0) * 100
+                    score = round(accuracy_score(y_test, y_pred),1) * 100
                     st.header("Results", divider='rainbow')  
                     st.subheader("Score: " + str(score) + "%")
 
