@@ -471,7 +471,7 @@ if choice == "Train & Test":
         #st.write(score)
         if problem_type == "Regression":
             st.warning("MAE Score")
-        st.write(accuracy_dict)
+        #st.write(accuracy_dict)
             
                 
            
