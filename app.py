@@ -457,20 +457,20 @@ if choice == "Train & Test":
         st.header("Recommended Features")
         st.image("Images/SHAP Values.png")
         top_features =  config.top_features.to_list()
-        subsets = powerset(top_features[:3])
-        subsets = [ele for ele in subsets if ele != []]
+        #subsets = powerset(top_features[:3])
+        #subsets = [ele for ele in subsets if ele != []]
                     
-        accuracy_dict = dict()
-        for i in range(len(subsets)):
+        #accuracy_dict = dict()
+        #for i in range(len(subsets)):
             
-            score  = Temp_model_train_test_results(X[subsets[i]],y,model,tag=problem_type)
-            if problem_type == "Regression":
-                accuracy_dict[str(subsets[i])] = (str(score))
-            else: 
-                accuracy_dict[str(subsets[i])] = (str(score) + " %")
+           # score  = Temp_model_train_test_results(X[subsets[i]],y,model,tag=problem_type)
+            #if problem_type == "Regression":
+                #accuracy_dict[str(subsets[i])] = (str(score))
+            #else: 
+               # accuracy_dict[str(subsets[i])] = (str(score) + " %")
         #st.write(score)
-        if problem_type == "Regression":
-            st.warning("MAE Score")
+        #if problem_type == "Regression":
+            #st.warning("MAE Score")
         #st.write(accuracy_dict)
             
                 
