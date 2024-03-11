@@ -411,13 +411,16 @@ if choice == "Train & Test":
 
     s = setup(data=df_numeric, target = chosen_target)
     best_model = compare_models(fold=3)
+    best_model = pull()
+    best_model.Model.tolist()
+    top_model = str(best_model[:1]['Model'].str.strip())
     
     st.selectbox('Choose Process',['AutoML','Manual ML'])
 
     if problem_type == "Regression":
-        model = st.selectbox('Choose Model',[best_model,'Linear Regression','Lasso'])
+        model = st.selectbox('Choose Model',[top_model,'Linear Regression','Lasso'])
         config.process_count=0
-        if model==best_model:
+        if model==top_model:
             model = best_model
         if model=="Linear Regression":
             model=LinearRegression()
@@ -429,7 +432,7 @@ if choice == "Train & Test":
         
         model = st.selectbox('Choose Model',[best_model,'Random Forest','Decision Tree'])
         config.process_count=0
-        if model==best_model:
+        if model==top_model:
             model = best_model
         if model=="Random Forest":
             model= RandomForestClassifier(n_estimators=100,random_state=1200)
