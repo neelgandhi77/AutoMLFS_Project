@@ -1,4 +1,4 @@
-==﻿altair==5.2.0
+altair==5.2.0
 annotated-types==0.6.0
 ansi2html==1.8.0
 asttokens==2.4.1
@@ -134,4 +134,4 @@ wrapt==1.16.0
 xxhash==3.4.1
 yellowbrick==1.5
 zipp==3.17.0
-
+pycaret==3.2.0
