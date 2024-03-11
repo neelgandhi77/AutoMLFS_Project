@@ -398,9 +398,10 @@ if choice == "Train & Test":
     
     chosen_target = st.selectbox('Choose the Target Column', df_numeric.columns[1:],len(df_numeric.columns)-2)
     problem_type= check_problem(chosen_target)
-
+    
+    y = df_numeric[chosen_target]
     X = df_numeric.drop([chosen_target],axis=1)
-    y = df[chosen_target]
+   
     X_for_processing = X
     y_for_processing = y
 
