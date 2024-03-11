@@ -1,4 +1,5 @@
 import streamlit as st
+#from pycaret.regression import *
 from sklearn.ensemble import *
 import os 
 import numpy as np
@@ -19,8 +20,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 import config
 
-from pycaret.classification import *
-from pycaret.regression import *
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -407,33 +406,26 @@ if choice == "Train & Test":
     y_for_processing = y
 
     X_train, X_test, y_train, y_test = train_test_split(X_for_processing, y_for_processing, test_size = 0.25,random_state=42)
-
-    s = setup(data=df_numeric, target = chosen_target)
-    best_model = compare_models(fold=3)
     
     st.selectbox('Choose Process',['AutoML','Manual ML'])
 
     if problem_type == "Regression":
-        model = st.selectbox('Choose Model',[best_model,'Linear Regression','Lasso'])
+        model = st.selectbox('Choose Model',['Linear Regression','Lasso'])
         config.process_count=0
         if model=="Linear Regression":
             model=LinearRegression()
         if model=="Lasso":
             model=Lasso()
-        if model == best_model:
-            model = best_model
         if model == 'Model Selection':
             st.warning("Please Select any One Model")
     else:
         
-        model = st.selectbox('Choose Model',[best_model,'Random Forest','Decision Tree'])
+        model = st.selectbox('Choose Model',['Random Forest','Decision Tree'])
         config.process_count=0
         if model=="Random Forest":
             model= RandomForestClassifier(n_estimators=100,random_state=1200)
         if model=="Decision Tree":
             model= DecisionTreeClassifier(criterion="gini",random_state=100)
-        if model == best_model:
-            model = best_model
         if model == 'Model Selection':
             st.warning("Please Select any One Model")
     
