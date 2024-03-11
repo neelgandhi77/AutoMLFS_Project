@@ -95,7 +95,7 @@ def model_train_test_results(X,y,model,tag):
                     #mae = metrics.mean_absolute_error(y_test, y_pred)
                     #mse = metrics.mean_squared_error(y_test, y_pred)
                     #rmse = np.sqrt(mse) # or mse**(0.5)  
-                    #r2 = metrics.r2_score(y_test,y_pred)
+                    r2 = metrics.r2_score(y_test,y_pred)
 
 
                     st.header("Results", divider='rainbow')  
@@ -103,7 +103,7 @@ def model_train_test_results(X,y,model,tag):
                     #st.write("MAE:",mae)           
                     #st.write("MSE:", mse)
                     #st.write("RMSE:", rmse)
-                    #st.write("R-Squared:", r2)
+                    st.write("R-Squared:", r2)
                     #fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline="ols",trendline_color_override = 'red') 
                     #st.plotly_chart(fig, use_container_width=True)
                      
