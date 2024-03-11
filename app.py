@@ -98,7 +98,7 @@ def model_train_test_results(X,y,model,tag):
                     r2 = metrics.r2_score(y_test,y_pred)
 
 
-                    st.header("Results", divider='rainbow')  
+                    #st.header("Results --Regression", divider='rainbow')  
                     #st.subheader("Score: " + str(score) + "%")
                     #st.write("MAE:",mae)           
                     #st.write("MSE:", mse)
@@ -110,7 +110,7 @@ def model_train_test_results(X,y,model,tag):
                 else:
 
                     score = round(accuracy_score(y_test, y_pred),5) * 100
-                    st.header("Results", divider='rainbow')  
+                    st.header("Results --Clssifiaction", divider='rainbow')  
                     st.subheader("Score: " + str(score) + "%")
 
                     #Generate the confusion matrix
