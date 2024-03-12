@@ -20,6 +20,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 import config
 
+from pycaret.classification import *
+from pycaret.regression import *
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -79,10 +81,10 @@ def Temp_model_train_test_results(X,y,model,tag):
 
     if tag =="Regression":
         mae = metrics.mean_absolute_error(y_test, y_pred)
-        score = round(mae,2)
+        score = round(mae,6)
                 
     else:
-        score = round(accuracy_score(y_test, y_pred),2) * 100
+        score = round(accuracy_score(y_test, y_pred),6) * 100
 
     #st.write(score)
     return score           
@@ -111,9 +113,9 @@ def model_train_test_results(X,y,model,tag):
                 if tag =="Regression":
 
                     #st.info("Accuracy Achieved")        
-                    #score = round(model.score(X_test,y_test),2) * 100
-                    mae = metrics.mean_absolute_error(y_test, y_pred)
-                    score = round(mae,2)
+                    #score = round(model.score(X_test,y_test),5) * 100
+                    #mae = metrics.mean_absolute_error(y_test, y_pred)
+                    #score = round(mae,6)
                     #mse = metrics.mean_squared_error(y_test, y_pred)
                     #rmse = np.sqrt(mse) # or mse**(0.5)  
                     r2 = metrics.r2_score(y_test,y_pred)
@@ -124,13 +126,13 @@ def model_train_test_results(X,y,model,tag):
                     #st.write("MAE:",mae)           
                     #st.write("MSE:", mse)
                     #st.write("RMSE:", rmse)
-                    st.write("R-Squared:", r2)
+                    st.subheader("R-Squared:   " + str(r2))
                     #fig = px.scatter([[y_test,y_pred]], x=y_test, y=y_pred,trendline="ols",trendline_color_override = 'red') 
                     #st.plotly_chart(fig, use_container_width=True)
                      
                 else:
 
-                    score = round(accuracy_score(y_test, y_pred),2) * 100
+                    score = round(accuracy_score(y_test, y_pred),6) * 100
                     st.header("Results", divider='rainbow')  
                     st.subheader("Score: " + str(score) + "%")
 
@@ -263,7 +265,8 @@ if choice == "Data Access":
             #print(response.json())
             df = pd.json_normalize(data,'response')
             df.columns = df.columns.str.replace(".", "_", regex=True)
-            df = df.fillna(0)
+            df = df.interpolate(method='ffill')
+            df= df.drop(columns=["deaths_new","cases_new"])
             df.to_csv('dataset.csv', index=None)
 
             st.dataframe(df)
@@ -407,11 +410,18 @@ if choice == "Train & Test":
 
     X_train, X_test, y_train, y_test = train_test_split(X_for_processing, y_for_processing, test_size = 0.25,random_state=42)
     
+    #s = setup(data= df_numeric, target = chosen_target)
+    best_model ="Auto Model"
+    top_model = str(best_model)
+
+
     st.selectbox('Choose Process',['AutoML','Manual ML'])
 
     if problem_type == "Regression":
-        model = st.selectbox('Choose Model',['Linear Regression','Lasso'])
+        model = st.selectbox('Choose Model',[top_model,'Linear Regression','Lasso'])
         config.process_count=0
+        if model == top_model:
+            model = best_model
         if model=="Linear Regression":
             model=LinearRegression()
         if model=="Lasso":
@@ -420,8 +430,10 @@ if choice == "Train & Test":
             st.warning("Please Select any One Model")
     else:
         
-        model = st.selectbox('Choose Model',['Random Forest','Decision Tree'])
+        model = st.selectbox('Choose Model',[top_model,'Random Forest','Decision Tree'])
         config.process_count=0
+        if model == top_model:
+            model = best_model
         if model=="Random Forest":
             model= RandomForestClassifier(n_estimators=100,random_state=1200)
         if model=="Decision Tree":
@@ -432,7 +444,7 @@ if choice == "Train & Test":
     
     if(model != "Model Selection"):
          
-        with st.spinner('Processing...'): 
+        with st.spinner('Proceesing...'): 
             
             with st.form("my_reco"):
                 submitted_reco = st.form_submit_button("Recommendations",on_click=None)
@@ -458,18 +470,7 @@ if choice == "Train & Test":
         st.header("Recommended Features")
         st.image("Images/SHAP Values.png")
         top_features =  config.top_features.to_list()
-        #subsets = powerset(top_features[:3])
-        #subsets = [ele for ele in subsets if ele != []]
-                    
-        #accuracy_dict = dict()
-        #for i in range(len(subsets)):
-            
-           # score  = Temp_model_train_test_results(X[subsets[i]],y,model,tag=problem_type)
-            #if problem_type == "Regression":
-                #accuracy_dict[str(subsets[i])] = (str(score))
-            #else: 
-               # accuracy_dict[str(subsets[i])] = (str(score) + " %")
-        #st.write(score)
+        
         #if problem_type == "Regression":
             #st.warning("MAE Score")
         #st.write(accuracy_dict)
@@ -477,8 +478,6 @@ if choice == "Train & Test":
                 
            
         with st.form("my_form"):
-            
-            
             
             selected_features = st.multiselect("Please Select features",options=pd.Series(X.columns))
             st.write(selected_features)
