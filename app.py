@@ -267,6 +267,7 @@ if choice == "Data Access":
             df.columns = df.columns.str.replace(".", "_", regex=True)
             df = df.interpolate(method='ffill')
             df= df.drop(columns=["deaths_new","cases_new"])
+            df = df.dropna()
             df.to_csv('dataset.csv', index=None)
 
             st.dataframe(df)
